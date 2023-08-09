@@ -29,7 +29,14 @@ function token.new(
 		-- primarily the \\" variant, where the string will not be finished even though it should be
 		local start, finish = tokenData.content:find("\\\\")
 
-		if start and finish ~= (#tokenData.content - 1) and (tokenData.content:sub(finish + 1, finish + 1) == "\"" or tokenData.content:sub(finish + 1, finish + 1) == "\'") then -- we've got a funny escape case o nour hands
+		if
+			start
+			and finish ~= (#tokenData.content - 1)
+			and (
+				tokenData.content:sub(finish + 1, finish + 1) == '"'
+				or tokenData.content:sub(finish + 1, finish + 1) == "'"
+			)
+		then -- we've got a funny escape case o nour hands
 			token.new({
 				type = types.string,
 				content = tokenData.content:sub(0, finish + 1),
