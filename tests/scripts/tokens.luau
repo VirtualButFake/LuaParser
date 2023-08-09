@@ -14,7 +14,7 @@ if tokens then
 		s = s .. v.trailingWhitespace .. v.content .. v.leadingWhitespace
 	end
 
-	fs.writeFile("lexerOutput.json", serde.encode("json", tokens, true))
+	print(tokens)
 end
 
 print("success")
