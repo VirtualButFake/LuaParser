@@ -2,7 +2,7 @@ local fs = require("@lune/fs")
 local process = require("@lune/process")
 local stdio = require("@lune/stdio")
 
-local tests = fs.readDir("./tests")
+local tests = fs.readDir("./tests/scripts")
 
 local function writeOut(textTable: { { string } })
 	for _, textEntry in textTable do
@@ -19,7 +19,7 @@ for testIndex, path in tests do
 	local timer = os.clock()
 
 	local output = process.spawn(`lune`, {
-		`tests/{path}`,
+		`tests/scripts/{path}`,
 	}, {
 		cwd = process.cwd,
 	})

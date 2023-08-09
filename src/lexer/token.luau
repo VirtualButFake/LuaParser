@@ -98,6 +98,7 @@ function token.new(
 	return
 end
 
+-- still want to work on this; want to make it so that value updates update content & vice versa
 function tokenFunctions:__index(key) end
 
 export type TokenOptions = {
