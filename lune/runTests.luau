@@ -2,6 +2,8 @@ local fs = require("@lune/fs")
 local process = require("@lune/process")
 local stdio = require("@lune/stdio")
 
+local logger = require("../src/utils/logger")
+
 local tests = fs.readDir("./tests/scripts")
 
 local function writeOut(textTable: { { string } })
@@ -27,19 +29,9 @@ for testIndex, path in tests do
 	timer = os.clock() - timer
 
 	if output.stdout:find("success") then
-		writeOut({
-			{ "[", "black" },
-			{ "SUCCESS", "green" },
-			{ "]", "black" },
-			{ ` Test {path} succeeded in {math.floor(timer * 1000) / 1000}s`, "reset" },
-		})
+		logger.success(`Test {path} succeeded in {math.floor(timer * 1000) / 1000}s`)
     else 
-        writeOut({
-			{ "[", "black" },
-			{ "FAILED", "red" },
-			{ "]", "black" },
-			{ ` Test {path} failed:`, "reset" },
-		})
+       	logger.error(`Test {path} failed:`)
         print(output)
 	end
 end

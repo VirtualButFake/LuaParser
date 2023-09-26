@@ -1,0 +1,59 @@
+[
+  {
+    "equalsValues": {
+      "leadingWhitespace": "",
+      "trailingWhitespace": "",
+      "equalsToken": {
+        "leadingWhitespace": " ",
+        "type": "punctuation",
+        "tokenStart": 16,
+        "tokenEnd": 17,
+        "content": "=",
+        "trailingWhitespace": ""
+      },
+      "values": [
+        {
+          "literalType": "number",
+          "leadingWhitespace": "",
+          "trailingWhitespace": "",
+          "literalToken": {
+            "leadingWhitespace": "",
+            "type": "number",
+            "tokenStart": 18,
+            "tokenEnd": 18,
+            "content": "1",
+            "trailingWhitespace": ""
+          }
+        }
+      ]
+    },
+    "identifiers": [
+      {
+        "leadingWhitespace": "",
+        "type": "identifier",
+        "tokenStart": 7,
+        "tokenEnd": 8,
+        "content": "hi",
+        "trailingWhitespace": ""
+      },
+      {
+        "leadingWhitespace": " ",
+        "type": "identifier",
+        "tokenStart": 11,
+        "tokenEnd": 15,
+        "content": "haha",
+        "trailingWhitespace": " "
+      }
+    ],
+    "leadingWhitespace": "",
+    "trailingWhitespace": "",
+    "localToken": {
+      "leadingWhitespace": " ",
+      "type": "keyword",
+      "tokenStart": 1,
+      "tokenEnd": 6,
+      "content": "local",
+      "trailingWhitespace": ""
+    }
+  }
+]

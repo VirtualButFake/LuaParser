@@ -9,6 +9,7 @@ local data = require("tokenData")
 local types = data.types
 
 local interStringPattern = "`[^\n]-`"
+local pendingBrackets = {}
 
 function token.new(
 	tokenData: TokenOptions,
@@ -17,7 +18,7 @@ function token.new(
 		source: string,
 		tokens: { TokenObject },
 	}
-): nil
+): TokenObject?
 	-- process tokens
 	if tokenData.type == types.identifier then
 		if table.find(data.keywords, tokenData.content) then
@@ -54,64 +55,84 @@ function token.new(
 			-- interpolated string
 			local stringPointer = 0
 			local inString = true
+			local openingString
+			local lastString
 
 			while stringPointer <= #tokenData.content do
-				local start, finish = tokenData.content:find("^.-[^\\][{}]", stringPointer)
+				local startString, finishString = tokenData.content:find("^.-[^\\][{}]", stringPointer)
 
-				if start == nil then
+				if startString == nil then
 					-- no brackets found; rest is all a normal string
-					token.new({
+					lastString = token.new({
 						type = types.string,
 						content = tokenData.content:sub(stringPointer),
 						tokenStart = tokenData.tokenStart + stringPointer,
-						tokenEnd = tokenData.tokenStart + (#tokenData.content - stringPointer),
-						leadingWhitespace = "",
+						tokenEnd = tokenData.tokenStart + stringPointer + #tokenData.content:sub(stringPointer),
+						leadingWhitespace = tokenData.leadingWhitespace,
 						trailingWhitespace = "",
 					}, lexer)
-
+					
 					break
 				end
 
-				if start and finish and inString then
-					token.new({
+				if startString and finishString and inString then
+					lastString = token.new({
 						type = types.string,
-						content = tokenData.content:sub(start, finish),
-						tokenStart = tokenData.tokenStart + start,
-						tokenEnd = tokenData.tokenStart + finish,
+						content = tokenData.content:sub(startString, finishString),
+						tokenStart = tokenData.tokenStart + startString,
+						tokenEnd = tokenData.tokenStart + finishString,
 						leadingWhitespace = "",
-						trailingWhitespace = "",
+						trailingWhitespace = openingString == nil and tokenData.trailingWhitespace or "",
 					}, lexer)
 
 					inString = false -- we just got rid of all text in front of the brackets, so we're now inside of the brackets
-					stringPointer = finish + 1
+					stringPointer = finishString + 1
 				elseif not inString then -- we're in code
-					local code = tokenData.content:sub(start, finish - 1)
-					local tokens = token.lexer.scan(code)
+					local code = tokenData.content:sub(startString, finishString - 1)
+					local tokens = token.lexer.scan(code, tokenData.tokenStart + stringPointer - 2)
 
 					for _, token in tokens do
+						token.isExpression = true
 						table.insert(lexer.tokens, token)
 					end
 
 					inString = true
-					stringPointer = finish
+					stringPointer = finishString
+				end
+
+				if lastString and not openingString then
+					openingString = lastString
 				end
 			end
 
+			openingString.closingString = lastString
+
 			return
+		end
+	elseif tokenData.type == types.punctutation then
+		if tokenData.content == "(" then
+			table.insert(pendingBrackets, tokenData)
+		end
+
+		if tokenData.content == ")" then
+			-- connect the most recent bracket to this closing
+			local bracket = pendingBrackets[#pendingBrackets] :: TokenOptions
+			bracket.closingBracket = tokenData
+			table.remove(pendingBrackets, #pendingBrackets)
 		end
 	end
 
 	table.insert(lexer.tokens, setmetatable(tokenData, tokenFunctions))
-	return
+	return tokenData
 end
 
--- still want to work on this; want to make it so that value updates update content & vice versa
-function tokenFunctions:__index(key) end
+function tokenFunctions:__tostring()
+	return self.trailingWhitespace .. self.content .. self.leadingWhitespace
+end
 
 export type TokenOptions = {
 	type: string,
 	content: string,
-	value: any,
 	-- position data
 	tokenStart: number,
 	tokenEnd: number,

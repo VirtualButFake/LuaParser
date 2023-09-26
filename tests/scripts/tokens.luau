@@ -4,7 +4,7 @@ local serde = require("@lune/serde")
 
 local lexer = require("../../src/lexer")
 
-local sample = fs.readFile("tests/samples/json.luau")
+local sample = fs.readFile("tests/samples/luraph.lua")
 local tokens = lexer.scan(sample)
 
 local s = ""
@@ -14,6 +14,7 @@ if tokens then
 		s = s .. v.trailingWhitespace .. v.content .. v.leadingWhitespace
 	end
 
+	fs.writeFile("output.json", serde.encode("json", tokens, true))
 	print(tokens)
 end
 

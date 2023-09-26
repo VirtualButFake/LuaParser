@@ -1,0 +1,3 @@
+-- Automatically generated file (lune/buildNodeDefinitions/init.lua)
+
+return NODE_MAP
